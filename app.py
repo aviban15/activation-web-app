@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from flask import Flask, render_template, request, jsonify
 import io
 import base64
-import json
+# import json
 
 app = Flask(__name__)
 
@@ -14,15 +14,15 @@ def sigmoid(x):
     """Sigmoid activation function"""
     return 1 / (1 + np.exp(-np.clip(x, -500, 500)))  # Clip to prevent overflow
 
-def relu(x):
-    """ReLU activation function"""
-    return np.maximum(0, x)
-
 def tanh(x):
     """Tanh activation function"""
     return np.tanh(x)
 
-def leaky_relu(x, alpha=0.01):
+def relu(x):
+    """ReLU activation function"""
+    return np.maximum(0, x)
+
+def leaky_relu(x, alpha=0.1):
     """Leaky ReLU activation function"""
     return np.where(x > 0, x, alpha * x)
 
@@ -41,8 +41,8 @@ def elu(x, alpha=1.0):
 # Dictionary of activation functions
 ACTIVATION_FUNCTIONS = {
     'sigmoid': {'func': sigmoid, 'name': 'Sigmoid', 'range': (-10, 10)},
-    'relu': {'func': relu, 'name': 'ReLU', 'range': (-5, 5)},
     'tanh': {'func': tanh, 'name': 'Tanh', 'range': (-5, 5)},
+    'relu': {'func': relu, 'name': 'ReLU', 'range': (-5, 5)},
     'leaky_relu': {'func': leaky_relu, 'name': 'Leaky ReLU', 'range': (-5, 5)},
     'swish': {'func': swish, 'name': 'Swish', 'range': (-5, 5)},
     'gelu': {'func': gelu, 'name': 'GELU', 'range': (-3, 3)},

@@ -17,8 +17,8 @@ A beautiful, interactive Flask web application for visualizing and understanding
 
 ### 🔧 Supported Activation Functions
 - **Sigmoid** - Classic S-shaped function, output range (0, 1)
-- **ReLU** - Rectified Linear Unit, most popular for hidden layers
 - **Tanh** - Hyperbolic tangent, zero-centered output (-1, 1)
+- **ReLU** - Rectified Linear Unit, most popular for hidden layers
 - **Leaky ReLU** - Prevents dead neurons with small negative slope
 - **Swish** - Self-gated function, often outperforms ReLU
 - **GELU** - Gaussian Error Linear Unit, used in modern transformers
@@ -99,8 +99,8 @@ Without activation functions, neural networks would be limited to learning only 
 | Function | Range | Advantages | Disadvantages |
 |----------|-------|------------|---------------|
 | Sigmoid | (0, 1) | Smooth, probabilistic output | Vanishing gradients |
-| ReLU | [0, ∞) | Simple, fast, avoids vanishing gradients | Dead neurons |
 | Tanh | (-1, 1) | Zero-centered, smooth | Vanishing gradients |
+| ReLU | [0, ∞) | Simple, fast, avoids vanishing gradients | Dead neurons |
 | Leaky ReLU | (-∞, ∞) | Prevents dead neurons | Requires tuning |
 | Swish | (-∞, ∞) | Self-gated, smooth | More computationally expensive |
 | GELU | (-∞, ∞) | Smooth, probabilistic | Complex computation |
@@ -137,47 +137,6 @@ Without activation functions, neural networks would be limited to learning only 
 - **Input validation** to prevent injection attacks
 - **Numpy clipping** to prevent overflow errors
 - **Error boundaries** for graceful failure handling
-
-## 🧪 Development
-
-### Running in Development Mode
-```bash
-# Enable debug mode
-export FLASK_ENV=development
-python main.py
-```
-
-### Code Quality
-```bash
-# Format code
-black main.py
-
-# Lint code
-flake8 main.py
-
-# Run tests (if available)
-pytest
-```
-
-## 🚀 Deployment
-
-### Local Deployment
-The app runs on `0.0.0.0:5000` by default, making it accessible on your local network.
-
-### Production Deployment
-For production deployment, consider:
-- Using a WSGI server like Gunicorn
-- Setting up a reverse proxy with Nginx
-- Configuring environment variables for security
-- Using a process manager like systemd
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 📄 License
 
