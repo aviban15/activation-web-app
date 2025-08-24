@@ -34,7 +34,7 @@ A beautiful, interactive Flask web application for visualizing and understanding
 
 ### Prerequisites
 - Python 3.11 or higher
-- pip or uv package manager
+- uv package manager
 
 ### Quick Start
 
@@ -48,14 +48,11 @@ A beautiful, interactive Flask web application for visualizing and understanding
    ```bash
    # Using uv (recommended)
    uv sync
-   
-   # Or using pip
-   pip install -r requirements.txt
    ```
 
 3. **Run the application**
    ```bash
-   python main.py
+   python app.py
    ```
 
 4. **Open your browser**
@@ -184,21 +181,7 @@ For production deployment, consider:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **NumPy** for efficient numerical computations
-- **Matplotlib** for beautiful plotting capabilities
-- **Flask** for the lightweight web framework
-- **The neural network community** for advancing our understanding of activation functions
-
-## 📞 Support
-
-If you encounter any issues or have questions:
-1. Check the [Issues](../../issues) page
-2. Create a new issue with detailed information
-3. Contact the maintainers
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
