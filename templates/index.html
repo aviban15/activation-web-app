@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activation Function Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(0, 255, 136, 0.08) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #161b22, #21262d);
+            border-radius: 15px;
+            border: 1px solid #30363d;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #8b949e;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .controls {
+            background: #161b22;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid #30363d;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #00ff88;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input {
+            padding: 12px 16px;
+            border: 2px solid #30363d;
+            border-radius: 8px;
+            background-color: #21262d;
+            color: #c9d1d9;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        select:hover, input:hover {
+            border-color: #484f58;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #0d1117;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.2);
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #00cc6a, #00ff88);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .visualization {
+            background: #161b22;
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid #30363d;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .plot-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .plot-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 1px solid #30363d;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .results {
+            background: #21262d;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #30363d;
+            margin-top: 20px;
+        }
+
+        .results h3 {
+            color: #00ff88;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #8b949e;
+        }
+
+        .result-value {
+            font-family: 'Courier New', monospace;
+            color: #00ff88;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8b949e;
+        }
+
+        .spinner {
+            border: 3px solid #30363d;
+            border-top: 3px solid #00ff88;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #da3633;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .info-section {
+            background: #161b22;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 1px solid #30363d;
+        }
+
+        .info-section h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .info-section p {
+            color: #8b949e;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .function-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .function-item {
+            background: #21262d;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+
+        .function-item h4 {
+            color: #00ff88;
+            margin-bottom: 8px;
+        }
+
+        .function-item p {
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+
+        @media (max-width: 768px) {
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-item {
+                width: 100%;
+            }
+
+            select, input, button {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Activation Function Visualizer</h1>
+            <p>Explore the behavior of different activation functions used in neural networks. 
+               Understand how these functions introduce non-linearity and affect the learning process.</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-item">
+                    <label for="function-select">Activation Function</label>
+                    <select id="function-select">
+                        {% for key, func in functions.items() %}
+                        <option value="{{ key }}" {% if key == 'sigmoid' %}selected{% endif %}>
+                            {{ func.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="control-item">
+                    <label for="input-value">Input Value (x)</label>
+                    <input type="number" id="input-value" placeholder="Enter a number" step="0.1" value="0">
+                </div>
+                
+                <div class="control-item">
+                    <label>&nbsp;</label>
+                    <button onclick="updateVisualization()">Visualize & Calculate</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization">
+            <div class="plot-container">
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Generating visualization...</p>
+                </div>
+                <img id="plot-image" src="" alt="Activation Function Plot" style="display: none;">
+            </div>
+
+            <div id="results" class="results" style="display: none;">
+                <h3>📊 Calculation Results</h3>
+                <div class="result-item">
+                    <span class="result-label">Function:</span>
+                    <span class="result-value" id="result-function">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Input (x):</span>
+                    <span class="result-value" id="result-input">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Output f(x):</span>
+                    <span class="result-value" id="result-output">-</span>
+                </div>
+            </div>
+
+            <div id="error-message" class="error" style="display: none;"></div>
+        </div>
+
+        <div class="info-section">
+            <h2>🎯 About Activation Functions</h2>
+            <p>
+                Activation functions are mathematical functions that determine the output of a neural network node. 
+                They introduce non-linearity into the network, allowing it to learn complex patterns and relationships in data.
+            </p>
+            <p>
+                Without activation functions, neural networks would simply be linear transformations, 
+                making them incapable of solving complex problems like image recognition or natural language processing.
+            </p>
+
+            <div class="function-list">
+                <div class="function-item">
+                    <h4>Sigmoid</h4>
+                    <p>Smooth, S-shaped curve. Output range: (0, 1). Can suffer from vanishing gradients.</p>
+                </div>
+                <div class="function-item">
+                    <h4>ReLU</h4>
+                    <p>Simple and effective. Output: max(0, x). Most popular for hidden layers.</p>
+                </div>
+                <div class="function-item">
+                    <h4>Tanh</h4>
+                    <p>Similar to sigmoid but centered at zero. Output range: (-1, 1).</p>
+                </div>
+                <div class="function-item">
+                    <h4>Leaky ReLU</h4>
+                    <p>Variation of ReLU that allows small negative values to prevent dead neurons.</p>
+                </div>
+                <div class="function-item">
+                    <h4>Swish</h4>
+                    <p>Self-gated activation function. Often outperforms ReLU in deep networks.</p>
+                </div>
+                <div class="function-item">
+                    <h4>GELU</h4>
+                    <p>Gaussian Error Linear Unit. Used in modern transformers like BERT and GPT.</p>
+                </div>
+                <div class="function-item">
+                    <h4>ELU</h4>
+                    <p>Exponential Linear Unit. Smooth everywhere and can produce negative outputs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load initial visualization
+        window.onload = function() {
+            updateVisualization();
+        };
+
+        function updateVisualization() {
+            const functionSelect = document.getElementById('function-select');
+            const inputValue = document.getElementById('input-value');
+            const loading = document.getElementById('loading');
+            const plotImage = document.getElementById('plot-image');
+            const results = document.getElementById('results');
+            const errorMessage = document.getElementById('error-message');
+
+            // Show loading
+            loading.style.display = 'block';
+            plotImage.style.display = 'none';
+            results.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            const selectedFunction = functionSelect.value;
+            const inputVal = inputValue.value;
+
+            // Fetch plot
+            const plotUrl = `/plot?function=${selectedFunction}&input_value=${encodeURIComponent(inputVal)}`;
+            
+            fetch(plotUrl)
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    
+                    if (data.success) {
+                        plotImage.src = 'data:image/png;base64,' + data.image;
+                        plotImage.style.display = 'block';
+                        
+                        // If input value is provided, also calculate the result
+                        if (inputVal !== '') {
+                            calculateResult();
+                        }
+                    } else {
+                        showError('Failed to generate plot: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    showError('Error: ' + error.message);
+                });
+        }
+
+        function calculateResult() {
+            const functionSelect = document.getElementById('function-select');
+            const inputValue = document.getElementById('input-value');
+            const results = document.getElementById('results');
+
+            const selectedFunction = functionSelect.value;
+            const inputVal = inputValue.value;
+
+            if (inputVal === '') {
+                return;
+            }
+
+            const calcUrl = `/calculate?function=${selectedFunction}&input_value=${encodeURIComponent(inputVal)}`;
+            
+            fetch(calcUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('result-function').textContent = data.function_name;
+                        document.getElementById('result-input').textContent = data.input.toFixed(4);
+                        document.getElementById('result-output').textContent = data.output.toFixed(6);
+                        results.style.display = 'block';
+                    } else {
+                        showError('Calculation failed: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    showError('Calculation error: ' + error.message);
+                });
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // Update visualization when function changes
+        document.getElementById('function-select').addEventListener('change', updateVisualization);
+        
+        // Update visualization when input value changes (with debounce)
+        let inputTimeout;
+        document.getElementById('input-value').addEventListener('input', function() {
+            clearTimeout(inputTimeout);
+            inputTimeout = setTimeout(updateVisualization, 500);
+        });
+
+        // Allow Enter key to trigger update
+        document.getElementById('input-value').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                updateVisualization();
+            }
+        });
+    </script>
+</body>
+</html>
