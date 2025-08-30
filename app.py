@@ -5,9 +5,22 @@ import matplotlib.pyplot as plt
 from flask import Flask, render_template, request, jsonify
 import io
 import base64
+import os
+from dotenv import load_dotenv
+from google import genai
 # import json
 
+# Load environment variables
+load_dotenv()
+
 app = Flask(__name__)
+
+# Initialize Gemini client
+API_KEY = os.getenv('GEMINI_API_KEY')
+if API_KEY:
+    client = genai.Client(api_key=API_KEY)
+else:
+    client = None
 
 # Activation functions
 def sigmoid(x):
@@ -111,6 +124,27 @@ def create_plot(func_name, input_value=None):
     
     return img_data
 
+def get_gemini_response(user_query):
+    """Get response from Gemini API about activation functions"""
+    if not client:
+        return "Gemini API is not configured. Please set your GEMINI_API_KEY environment variable."
+    
+    try:
+        # Add context about activation functions to the query
+        context = """You are an expert in neural networks and activation functions. 
+        Answer questions about activation functions in a clear, concise, and educational manner. 
+        Focus on practical explanations that help understand how activation functions work in neural networks."""
+        
+        full_query = f"{context}\n\nUser question: {user_query}"
+        
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=full_query,
+        )
+        return response.text
+    except Exception as e:
+        return f"Error getting response from Gemini API: {str(e)}"
+
 @app.route('/')
 def index():
     """Main page"""
@@ -155,6 +189,26 @@ def calculate():
         })
     except (ValueError, TypeError):
         return jsonify({'success': False, 'error': 'Invalid input value'})
+
+@app.route('/ask_gemini', methods=['POST'])
+def ask_gemini():
+    """Handle questions about activation functions using Gemini API"""
+    try:
+        data = request.get_json()
+        user_question = data.get('question', '').strip()
+        
+        if not user_question:
+            return jsonify({'success': False, 'error': 'Please enter a question'})
+        
+        response = get_gemini_response(user_question)
+        
+        return jsonify({
+            'success': True,
+            'question': user_question,
+            'response': response
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Error processing request: {str(e)}'})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

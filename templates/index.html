@@ -239,6 +239,106 @@
             margin-bottom: 15px;
         }
 
+        .gemini-chat {
+            margin-top: 20px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chat-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px;
+            border: 2px solid #30363d;
+            border-radius: 8px;
+            background-color: #21262d;
+            color: #c9d1d9;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        .chat-input::placeholder {
+            color: #6e7681;
+        }
+
+        .ask-button {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #0d1117;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-height: 60px;
+        }
+
+        .ask-button:hover {
+            background: linear-gradient(135deg, #00cc6a, #00ff88);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .ask-button:disabled {
+            background: #30363d;
+            color: #6e7681;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .chat-response {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .chat-response.show {
+            display: block;
+        }
+
+        .response-header {
+            color: #00ff88;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .response-content {
+            color: #c9d1d9;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .chat-loading {
+            text-align: center;
+            padding: 20px;
+            color: #8b949e;
+            display: none;
+        }
+
+        .chat-loading.show {
+            display: block;
+        }
+
         .function-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -276,6 +376,19 @@
             select, input, button {
                 min-width: auto;
                 width: 100%;
+            }
+
+            .chat-input-container {
+                flex-direction: column;
+            }
+
+            .chat-input {
+                min-width: auto;
+            }
+
+            .ask-button {
+                width: 100%;
+                min-height: 50px;
             }
 
             .header h1 {
@@ -350,45 +463,36 @@
         </div>
 
         <div class="info-section">
-            <h2>🎯 About Activation Functions</h2>
+            <h2>🤖 Ask AI About Activation Functions</h2>
             <p>
-                Activation functions are mathematical functions that determine the output of a neural network node. 
-                They introduce non-linearity into the network, allowing it to learn complex patterns and relationships in data.
-            </p>
-            <p>
-                Without activation functions, neural networks would simply be linear transformations, 
-                making them incapable of solving complex problems like image recognition or natural language processing.
+                Have questions about activation functions? Ask our AI assistant powered by Gemini! 
+                Get detailed explanations about how different activation functions work, their properties, 
+                use cases, and much more.
             </p>
 
-            <div class="function-list">
-                <div class="function-item">
-                    <h4>Sigmoid</h4>
-                    <p>Smooth, S-shaped curve. Output range: (0, 1). Can suffer from vanishing gradients.</p>
+            <div class="gemini-chat">
+                <div class="chat-input-container">
+                    <textarea 
+                        id="gemini-question" 
+                        class="chat-input" 
+                        placeholder="Ask anything about activation functions... (e.g., 'What is the difference between ReLU and Sigmoid?', 'When should I use GELU?', 'Explain the vanishing gradient problem')"
+                        rows="3"></textarea>
+                    <button id="ask-gemini-btn" class="ask-button" onclick="askGemini()">
+                        Ask AI
+                    </button>
                 </div>
-                <div class="function-item">
-                    <h4>Tanh</h4>
-                    <p>Similar to sigmoid but centered at zero. Output range: (-1, 1).</p>
-                </div>                
-                <div class="function-item">
-                    <h4>ReLU</h4>
-                    <p>Simple and effective. Output: max(0, x). Most popular for hidden layers.</p>
+
+                <div id="chat-loading" class="chat-loading">
+                    <div class="spinner"></div>
+                    <p>Getting AI response...</p>
                 </div>
-                <div class="function-item">
-                    <h4>Leaky ReLU</h4>
-                    <p>Variation of ReLU that allows small negative values to prevent dead neurons.</p>
+
+                <div id="chat-response" class="chat-response">
+                    <div class="response-header">🤖 AI Response:</div>
+                    <div id="response-content" class="response-content"></div>
                 </div>
-                <div class="function-item">
-                    <h4>Swish</h4>
-                    <p>Self-gated activation function. Often outperforms ReLU in deep networks.</p>
-                </div>
-                <div class="function-item">
-                    <h4>GELU</h4>
-                    <p>Gaussian Error Linear Unit. Used in modern transformers like BERT and GPT.</p>
-                </div>
-                <div class="function-item">
-                    <h4>ELU</h4>
-                    <p>Exponential Linear Unit. Smooth everywhere and can produce negative outputs.</p>
-                </div>
+
+                <div id="chat-error" class="error" style="display: none;"></div>
             </div>
         </div>
     </div>
@@ -479,6 +583,65 @@
             errorMessage.style.display = 'block';
         }
 
+        function showChatError(message) {
+            const chatError = document.getElementById('chat-error');
+            chatError.textContent = message;
+            chatError.style.display = 'block';
+        }
+
+        function askGemini() {
+            const questionInput = document.getElementById('gemini-question');
+            const askButton = document.getElementById('ask-gemini-btn');
+            const chatLoading = document.getElementById('chat-loading');
+            const chatResponse = document.getElementById('chat-response');
+            const chatError = document.getElementById('chat-error');
+            const responseContent = document.getElementById('response-content');
+
+            const question = questionInput.value.trim();
+            
+            if (!question) {
+                showChatError('Please enter a question about activation functions.');
+                return;
+            }
+
+            // Show loading state
+            askButton.disabled = true;
+            askButton.textContent = 'Asking...';
+            chatLoading.classList.add('show');
+            chatResponse.classList.remove('show');
+            chatError.style.display = 'none';
+
+            // Make API call
+            fetch('/ask_gemini', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading
+                chatLoading.classList.remove('show');
+                askButton.disabled = false;
+                askButton.textContent = 'Ask AI';
+
+                if (data.success) {
+                    responseContent.textContent = data.response;
+                    chatResponse.classList.add('show');
+                } else {
+                    showChatError('Error: ' + (data.error || 'Failed to get response'));
+                }
+            })
+            .catch(error => {
+                // Hide loading
+                chatLoading.classList.remove('show');
+                askButton.disabled = false;
+                askButton.textContent = 'Ask AI';
+                showChatError('Network error: ' + error.message);
+            });
+        }
+
         // Update visualization when function changes
         document.getElementById('function-select').addEventListener('change', updateVisualization);
         
@@ -493,6 +656,14 @@
         document.getElementById('input-value').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 updateVisualization();
+            }
+        });
+
+        // Allow Ctrl+Enter or Cmd+Enter to ask Gemini
+        document.getElementById('gemini-question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                askGemini();
             }
         });
     </script>
