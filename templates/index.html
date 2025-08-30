@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activation Function Visualizer</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -325,7 +326,107 @@
         .response-content {
             color: #c9d1d9;
             line-height: 1.6;
-            white-space: pre-wrap;
+        }
+
+        /* Markdown styling for response content */
+        .response-content h1,
+        .response-content h2,
+        .response-content h3,
+        .response-content h4,
+        .response-content h5,
+        .response-content h6 {
+            color: #00ff88;
+            margin: 1em 0 0.5em 0;
+            font-weight: 600;
+        }
+
+        .response-content h1 { font-size: 1.5em; }
+        .response-content h2 { font-size: 1.3em; }
+        .response-content h3 { font-size: 1.2em; }
+        .response-content h4 { font-size: 1.1em; }
+
+        .response-content p {
+            margin: 0.75em 0;
+        }
+
+        .response-content ul,
+        .response-content ol {
+            margin: 0.75em 0;
+            padding-left: 1.5em;
+        }
+
+        .response-content li {
+            margin: 0.25em 0;
+        }
+
+        .response-content code {
+            background-color: #161b22;
+            color: #ff6b6b;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .response-content pre {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 1em;
+            margin: 1em 0;
+            overflow-x: auto;
+        }
+
+        .response-content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #c9d1d9;
+        }
+
+        .response-content blockquote {
+            border-left: 4px solid #00ff88;
+            margin: 1em 0;
+            padding-left: 1em;
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .response-content strong {
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        .response-content em {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .response-content table {
+            border-collapse: collapse;
+            margin: 1em 0;
+            width: 100%;
+        }
+
+        .response-content th,
+        .response-content td {
+            border: 1px solid #30363d;
+            padding: 0.5em;
+            text-align: left;
+        }
+
+        .response-content th {
+            background-color: #21262d;
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        .response-content a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        .response-content a:hover {
+            text-decoration: underline;
         }
 
         .chat-loading {
@@ -499,6 +600,17 @@
     </div>
 
     <script>
+        // Configure marked.js for safe rendering
+        if (typeof marked !== 'undefined') {
+            marked.setOptions({
+                breaks: true,
+                gfm: true,
+                sanitize: false,
+                smartLists: true,
+                smartypants: true
+            });
+        }
+
         // Load initial visualization
         window.onload = function() {
             updateVisualization();
@@ -628,7 +740,14 @@
                 askButton.textContent = 'Ask AI';
 
                 if (data.success) {
-                    responseContent.textContent = data.response;
+                    // Parse and render Markdown if marked.js is available
+                    if (typeof marked !== 'undefined') {
+                        const parsedMarkdown = marked.parse(data.response);
+                        responseContent.innerHTML = parsedMarkdown;
+                    } else {
+                        // Fallback to plain text if marked.js is not available
+                        responseContent.textContent = data.response;
+                    }
                     chatResponse.classList.add('show');
                 } else {
                     showChatError('Error: ' + (data.error || 'Failed to get response'));
