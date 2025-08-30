@@ -138,7 +138,7 @@ def get_gemini_response(user_query):
         full_query = f"{context}\n\nUser question: {user_query}"
         
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=full_query,
         )
         return response.text
