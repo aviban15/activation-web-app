@@ -6,14 +6,17 @@ dist/
 wheels/
 *.egg-info
 
+# macOS files
+.DS_Store
+
 # Virtual environments
 .venv
-
-# Jupyter notebooks
-*.ipynb
 
 # Environment variables
 .env
 
-# macOS files
-.DS_Store
+# Jupyter notebooks
+*.ipynb
+
+# Test folder
+test
